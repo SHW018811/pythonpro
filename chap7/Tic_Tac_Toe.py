@@ -27,15 +27,25 @@ def Ingame(Choice):
     while True:
         if Turn == True:
             #유저가 놓는거
-            MovNum = int(input("Where will you move? <0 - 8>:"))
+            while True:
+                MovNum = int(input("Where will you move? <0 - 8>:"))
+                if Board[MovNum] == "": break
+                else: print("<<해당 위치에 값이 존재합니다 다시 입력하세요.>>")
             print("Fine..\n")
             Set_OX(MovNum,Turn)
             Turn = False
         elif Turn == False:
             #AI가 놓는 함수 입력
+            aicnt = 0
             while True:
                 AiNum = random.randrange(0,9)
                 if(Board[AiNum] == ""): break
+                for i in range(9):
+                    if(Board[i] != ""):
+                        aicnt+=1
+                if(aicnt == 9):
+                    draw()
+                    return 0
             print("I shall take square number",AiNum,"\n")
             Set_OX(AiNum,Turn) #우선 랜덤
             Turn = True
@@ -138,6 +148,11 @@ def Who_Win():
     elif Board[4] == "X":
         if (Board[0] == "X" and Board[8] == "X") or (Board[2] == "X" and Board[6] == "X"):
             return "X Won"
+    #비길때
+
+def draw():
+    print("Game result is draw good game human.")
+    print("\n\nPress the enter key to quit.")
 
 
 Board = ["","","","","","","","",""]

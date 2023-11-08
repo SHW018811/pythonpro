@@ -13,11 +13,15 @@ while True :
     if num == 0 :
         break
     elif num == 1 :
+<<<<<<< Updated upstream
         find = input("What term  do you want me to translate?: ")
         if find in geek:
             print(find,"means",geek[find])
         else:
             print("I have no idea what",find,"is.")
+=======
+        
+>>>>>>> Stashed changes
     elif num == 2 :
         add = input("Enter characters to add: ")
         if add in geek:

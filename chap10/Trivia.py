@@ -26,7 +26,7 @@ pickle_file.close()
 pickle_file = open("pickles1.dat", "rb")
 choi = random.randrange(1,4)
 pro = cPickle.load(pickle_file)
-prob = pro
+prob = problem[choi]
 print(prob['subject'])
 print(prob['content'])
 try:

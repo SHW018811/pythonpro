@@ -278,7 +278,15 @@ while True:
             if(i != idxtemp):
                 p[i].chips -= p[i].bat
                 print("\nNow",p[i].name,"Chips :",p[i].chips)
-
-    again = int(input("Do you play again? -> 1(again) 0(exit) : "))
+    
+    for i in range(playnum):
+        if(p[i].chips <= 0):
+            print(p[i].name, "don't have a chips!")
+            print(p[i].name, "Lose")
+            again = 0
+            break
+        else:
+            again = int(input("Do you play again? -> 1(again) 0(exit) : "))
+            break
     na += 1
     if(again == 0) : break

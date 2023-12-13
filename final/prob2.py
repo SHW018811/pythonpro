@@ -179,63 +179,96 @@ for i in range(playnum):
 dealer = Dealer("dealer")
 dealer.card = Hand()
 na = 0
+while True:
 #각 플레이어들에게 카드 분배
-hands = []
-for i in range(playnum):
-    hands.append(p[i].card)
-hands.append(dealer.card)
-deck.deal(hands, per_hand = 2) #hands에 있는 존재들에게 카드 부여
+    if(na > 0):
+        for i in range(playnum):
+            p[i].card = Hand() #카드 저장소
+            p[i].len = 2 #플레이어가 가진 카드 수
+            p[i].arrsum = 0 #플레이어 카드 값 합계
+            p[i].turn = True #플레이어 버스트 유무
+        dealer.card = Hand()
+        dealer.face = False
+        dealer.len = 2 #딜러가 가진 카드 수
+        dealer.arrsum = 0 #딜러 카드 값 합계
+        dealer.turn = True #딜러 버스트 유무
+        na = 0
+    
+    hands = []
 
-chp = Chip()
 
-for i in range(playnum):
-    print(p[i].name,"",end='')
-    p[i].bat = int(input("How much will you bat($)? : "))
-    chp.bat(p[i].chips ,p[i].bat)
+    for i in range(playnum):
+        hands.append(p[i].card)
+    hands.append(dealer.card)
+    deck.deal(hands, per_hand = 2) #hands에 있는 존재들에게 카드 부여
+
+    chp = Chip()
+
+    for i in range(playnum):
+        print(p[i].name,"",end='')
+        p[i].bat = int(input("How much will you bat($)? : "))
+        chp.bat(p[i].chips ,p[i].bat)
 
 
-for i in range(playnum):
-    p[i].resultsum()
-    p[i].printcard()
-dealer.printcard() #해당 부분에서 딜러가 히트 전까지 첫번째 카드 비공개해야함.
-print()
-#여기 까지 카드 배정 -------------------------------------------------------
-
-for i in range(playnum):
-    if(p[i].turn == True):#false는 버스트 난거
-        print(p[i].name,", do you want a hit? <Y/N> : ",sep='',end='')
-        saving = input()
-        p[i].Hit(saving)
+    for i in range(playnum):
         p[i].resultsum()
-        print(p[i].name,":",p[i].card,"(",p[i].arrsum,")")
-        if(p[i].arrsum > 21): #Bust
-            p[i].turn = False
-            print(p[i].name,"busts.")
-            print(p[i].name,"loses.")
-        print()
+        p[i].printcard()
+    dealer.printcard() #해당 부분에서 딜러가 히트 전까지 첫번째 카드 비공개해야함.
+    print()
+    #여기 까지 카드 배정 -------------------------------------------------------
 
-dealer.resultsum()
-dealer.Hit()
-if(dealer.arrsum > 21): #dealer bust
-    dealer.turn = False
-    print(dealer.name, "busts.")
-    print(dealer.name, "loses.")
+    for i in range(playnum):
+        if(p[i].turn == True):#false는 버스트 난거
+            print(p[i].name,", do you want a hit? <Y/N> : ",sep='',end='')
+            saving = input()
+            p[i].Hit(saving)
+            p[i].resultsum()
+            print(p[i].name,":",p[i].card,"(",p[i].arrsum,")")
+            if(p[i].arrsum > 21): #Bust
+                p[i].turn = False
+                print(p[i].name,"busts.")
+                print(p[i].name,"loses.")
+            print()
 
-temp = 0
-idxtemp = 0
-draw = [] #비긴 사람들을 저장
-for i in range(playnum):
-    if(temp == p[i].arrsum):
-        draw.append(i)
-    elif(temp < p[i].arrsum and p[i].turn == True):
-        temp = p[i].arrsum
-        idxtemp = i
-        draw = []
-tot = 0
-if(len(draw) > 0 and dealer.arrsum <= p[draw[0]].arrsum):
-    print("Draw")#비겼으니 유지.
-elif(dealer.turn == True):
-    if(temp > dealer.arrsum):
+    dealer.resultsum()
+    dealer.Hit()
+    if(dealer.arrsum > 21): #dealer bust
+        dealer.turn = False
+        print(dealer.name, "busts.")
+        print(dealer.name, "loses.")
+
+    temp = 0
+    idxtemp = 0
+    draw = [] #비긴 사람들을 저장
+    for i in range(playnum):
+        if(temp == p[i].arrsum):
+            draw.append(i)
+        elif(temp < p[i].arrsum and p[i].turn == True):
+            temp = p[i].arrsum
+            idxtemp = i
+            draw = []
+    tot = 0
+    if(len(draw) > 0 and dealer.arrsum <= p[draw[0]].arrsum):
+        print("Draw")#비겼으니 유지.
+    elif(dealer.turn == True):
+        if(temp > dealer.arrsum):
+            tot = p[idxtemp].bat * 2
+            p[idxtemp].chips += tot
+            print(p[idxtemp].name,"Wins.")
+            print(p[idxtemp].name,"Get",tot,"Chips")
+            print("Now",p[idxtemp].name,"Chips :",p[idxtemp].chips)
+            for i in range(playnum):
+                if(i != idxtemp):
+                    p[i].chips -= p[i].bat
+                    print("\nNow",p[i].name,"Chips :",p[i].chips)
+        elif(temp < dealer.arrsum):
+            print(dealer.name,"Wins.")
+            for i in range(playnum):
+                p[i].chips -= p[i].bat
+                print("Take away Chips",p[i].name)
+                print("Now Chips : ",p[i].chips)
+    else:
+        print(p[idxtemp].name,"Wins.")
         tot = p[idxtemp].bat * 2
         p[idxtemp].chips += tot
         print(p[idxtemp].name,"Wins.")
@@ -245,23 +278,7 @@ elif(dealer.turn == True):
             if(i != idxtemp):
                 p[i].chips -= p[i].bat
                 print("\nNow",p[i].name,"Chips :",p[i].chips)
-    elif(temp < dealer.arrsum):
-        print(dealer.name,"Wins.")
-        for i in range(playnum):
-            p[i].chips -= p[i].bat
-            print("Take away Chips",p[i].name)
-            print("Now Chips : ",p[i].chips)
-else:
-    print(p[idxtemp].name,"Wins.")
-    tot = p[idxtemp].bat * 2
-    p[idxtemp].chips += tot
-    print(p[idxtemp].name,"Wins.")
-    print(p[idxtemp].name,"Get",tot,"Chips")
-    print("Now",p[idxtemp].name,"Chips :",p[idxtemp].chips)
-    for i in range(playnum):
-        if(i != idxtemp):
-            p[i].chips -= p[i].bat
-            print("\nNow",p[i].name,"Chips :",p[i].chips)
 
-again = int(input("Do you play again? -> 1(again) 0(exit) : "))
-na += 1
+    again = int(input("Do you play again? -> 1(again) 0(exit) : "))
+    na += 1
+    if(again == 0) : break
